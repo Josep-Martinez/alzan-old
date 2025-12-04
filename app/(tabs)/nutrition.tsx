@@ -5,12 +5,12 @@ import React, { useState } from 'react';
 import {
   Image,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProgressBar } from 'react-native-paper';
 
 // Importar componentes personalizados
@@ -69,20 +69,20 @@ export default function NutritionScreen() {
   const generateWeekDays = (): WeekDay[] => {
     const today = new Date();
     const currentDay = today.getDay();
-    
+
     const weekDays: WeekDay[] = [];
     const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-    
+
     // Calcular el offset para que la semana empiece en lunes
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-    
+
     for (let i = 0; i < 7; i++) {
       const dayDate = new Date(today);
       dayDate.setDate(today.getDate() + mondayOffset + i);
-      
+
       const isToday = dayDate.toDateString() === today.toDateString();
       const mockMeals = generateMockMealsForDay(i, isToday);
-      
+
       weekDays.push({
         id: `day-${i}`,
         day: dayNames[dayDate.getDay()],
@@ -93,7 +93,7 @@ export default function NutritionScreen() {
         waterIntake: isToday ? 1200 : Math.floor(Math.random() * 1000) + 1500
       });
     }
-    
+
     return weekDays;
   };
 
@@ -285,13 +285,13 @@ export default function NutritionScreen() {
    */
   const calculateDayNutrition = (): DayNutrition => {
     const totalCalories = mealSections.reduce((sum, meal) => sum + meal.totalCalories, 0);
-    const totalProtein = mealSections.reduce((sum, meal) => 
+    const totalProtein = mealSections.reduce((sum, meal) =>
       sum + meal.foods.reduce((mealSum, food) => mealSum + food.protein, 0), 0
     );
-    const totalCarbs = mealSections.reduce((sum, meal) => 
+    const totalCarbs = mealSections.reduce((sum, meal) =>
       sum + meal.foods.reduce((mealSum, food) => mealSum + food.carbs, 0), 0
     );
-    const totalFats = mealSections.reduce((sum, meal) => 
+    const totalFats = mealSections.reduce((sum, meal) =>
       sum + meal.foods.reduce((mealSum, food) => mealSum + food.fats, 0), 0
     );
 
@@ -307,7 +307,7 @@ export default function NutritionScreen() {
    * FUNCIONES DE NAVEGACIÓN Y SELECCIÓN
    */
   const selectDay = (dayId: string) => {
-    setWeekDays(prevDays => 
+    setWeekDays(prevDays =>
       prevDays.map(day => ({
         ...day,
         isSelected: day.id === dayId
@@ -327,7 +327,7 @@ export default function NutritionScreen() {
    */
   const handleAddExtraMeal = (name: string, time: string) => {
     console.log(`🍽️ Añadiendo comida extra: ${name} a las ${time}`);
-    
+
     const newMeal: MealSection = {
       id: `extra-${Date.now()}`,
       name: name,
@@ -339,7 +339,7 @@ export default function NutritionScreen() {
       isExpanded: false
     };
 
-    setWeekDays(prevDays => 
+    setWeekDays(prevDays =>
       prevDays.map(day => {
         if (!day.isSelected) return day;
 
@@ -349,7 +349,7 @@ export default function NutritionScreen() {
             const [hours, minutes] = timeStr.split(':').map(Number);
             return hours * 60 + minutes;
           };
-          
+
           return timeToMinutes(a.time) - timeToMinutes(b.time);
         });
 
@@ -366,14 +366,14 @@ export default function NutritionScreen() {
    * Permite mostrar u ocultar los ingredientes de comidas confirmadas
    */
   const toggleMealExpanded = (mealId: string) => {
-    setWeekDays(prevDays => 
+    setWeekDays(prevDays =>
       prevDays.map(day => {
         if (!day.isSelected) return day;
 
         return {
           ...day,
-          meals: day.meals.map(meal => 
-            meal.id === mealId 
+          meals: day.meals.map(meal =>
+            meal.id === mealId
               ? { ...meal, isExpanded: !meal.isExpanded }
               : meal
           )
@@ -387,14 +387,14 @@ export default function NutritionScreen() {
    * Marca una comida como completada o la desmarca
    */
   const toggleMealCompleted = (mealId: string) => {
-    setWeekDays(prevDays => 
+    setWeekDays(prevDays =>
       prevDays.map(day => {
         if (!day.isSelected) return day;
 
         return {
           ...day,
-          meals: day.meals.map(meal => 
-            meal.id === mealId 
+          meals: day.meals.map(meal =>
+            meal.id === mealId
               ? { ...meal, isCompleted: !meal.isCompleted }
               : meal
           )
@@ -409,22 +409,22 @@ export default function NutritionScreen() {
    */
   const removeFoodFromMeal = (mealId: string, foodId: string) => {
     console.log(`🗑️ Eliminando alimento ${foodId} de la comida ${mealId}`);
-    
-    setWeekDays(prevDays => 
+
+    setWeekDays(prevDays =>
       prevDays.map(day => {
         if (!day.isSelected) return day;
 
         return {
           ...day,
-          meals: day.meals.map(meal => 
-            meal.id === mealId 
-              ? { 
-                  ...meal, 
-                  foods: meal.foods.filter(food => food.id !== foodId),
-                  totalCalories: meal.foods
-                    .filter(food => food.id !== foodId)
-                    .reduce((sum, food) => sum + food.calories, 0)
-                }
+          meals: day.meals.map(meal =>
+            meal.id === mealId
+              ? {
+                ...meal,
+                foods: meal.foods.filter(food => food.id !== foodId),
+                totalCalories: meal.foods
+                  .filter(food => food.id !== foodId)
+                  .reduce((sum, food) => sum + food.calories, 0)
+              }
               : meal
           )
         };
@@ -458,19 +458,19 @@ export default function NutritionScreen() {
    * Función helper para añadir ingredientes a una comida específica
    */
   const updateSelectedDayMeals = (mealId: string, newFood: FoodItem) => {
-    setWeekDays(prevDays => 
+    setWeekDays(prevDays =>
       prevDays.map(day => {
         if (!day.isSelected) return day;
 
         return {
           ...day,
-          meals: day.meals.map(meal => 
-            meal.id === mealId 
-              ? { 
-                  ...meal, 
-                  foods: [...meal.foods, newFood],
-                  totalCalories: meal.totalCalories + newFood.calories
-                }
+          meals: day.meals.map(meal =>
+            meal.id === mealId
+              ? {
+                ...meal,
+                foods: [...meal.foods, newFood],
+                totalCalories: meal.totalCalories + newFood.calories
+              }
               : meal
           )
         };
@@ -483,9 +483,9 @@ export default function NutritionScreen() {
    * Manejo del consumo de agua diario
    */
   const addWater = (amount: number) => {
-    setWeekDays(prevDays => 
-      prevDays.map(day => 
-        day.isSelected 
+    setWeekDays(prevDays =>
+      prevDays.map(day =>
+        day.isSelected
           ? { ...day, waterIntake: day.waterIntake + amount }
           : day
       )
@@ -493,9 +493,9 @@ export default function NutritionScreen() {
   };
 
   const removeWater = (amount: number) => {
-    setWeekDays(prevDays => 
-      prevDays.map(day => 
-        day.isSelected 
+    setWeekDays(prevDays =>
+      prevDays.map(day =>
+        day.isSelected
           ? { ...day, waterIntake: Math.max(0, day.waterIntake - amount) }
           : day
       )
@@ -511,7 +511,7 @@ export default function NutritionScreen() {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -520,10 +520,10 @@ export default function NutritionScreen() {
           <View style={styles.header}>
             <Text style={styles.title}>Registro Nutricional 📊</Text>
             <Text style={styles.subtitle}>
-              {new Date().toLocaleDateString('es-ES', { 
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long' 
+              {new Date().toLocaleDateString('es-ES', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
               })}
             </Text>
           </View>
@@ -531,8 +531,8 @@ export default function NutritionScreen() {
           {/* CALENDARIO SEMANAL */}
           <View style={styles.calendarSection}>
             <Text style={styles.calendarTitle}>Plan Semanal</Text>
-            <ScrollView 
-              horizontal 
+            <ScrollView
+              horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.calendarScroll}
               contentContainerStyle={styles.calendarContent}
@@ -589,7 +589,7 @@ export default function NutritionScreen() {
                   Resumen del {selectedDay?.isToday ? 'Día' : selectedDay?.day}
                 </Text>
               </View>
-              
+
               <View style={styles.macrosContainer}>
                 <View style={styles.mainCalories}>
                   <Text style={styles.calorieNumber}>
@@ -620,7 +620,7 @@ export default function NutritionScreen() {
                 style={styles.progressBar}
                 color="#00D4AA"
               />
-              
+
               <Text style={styles.progressText}>
                 {Math.round(progressPercentage)}% del objetivo diario
               </Text>
@@ -631,9 +631,9 @@ export default function NutritionScreen() {
           <View style={styles.mealsSection}>
             <View style={styles.mealsSectionHeader}>
               <Text style={styles.sectionTitle}>Registro de Comidas</Text>
-              
+
               {selectedDay?.isToday && (
-                <Pressable 
+                <Pressable
                   style={styles.addExtraMealButton}
                   onPress={() => setShowAddExtraMealModal(true)}
                 >
@@ -642,22 +642,22 @@ export default function NutritionScreen() {
                 </Pressable>
               )}
             </View>
-            
+
             {mealSections.map((meal) => (
               <View key={meal.id} style={styles.mealSection}>
                 <LinearGradient
-                  colors={meal.isCompleted 
-                    ? ['rgba(0, 220, 180, 0.45)', 'rgba(20, 195, 140, 0.45)'] 
+                  colors={meal.isCompleted
+                    ? ['rgba(0, 220, 180, 0.45)', 'rgba(20, 195, 140, 0.45)']
                     : ['#2D2D5F', '#3D3D7F']
                   }
                   style={styles.mealGradient}
                 >
                   <View style={styles.mealHeader}>
                     <View style={styles.mealTitleContainer}>
-                      <MaterialCommunityIcons 
-                        name={meal.icon as any} 
-                        size={24} 
-                        color={meal.isCompleted ? "#FFFFFF" : "#00D4AA"} 
+                      <MaterialCommunityIcons
+                        name={meal.icon as any}
+                        size={24}
+                        color={meal.isCompleted ? "#FFFFFF" : "#00D4AA"}
                       />
                       <View style={styles.mealTitleInfo}>
                         <Text style={styles.mealName}>{meal.name}</Text>
@@ -666,7 +666,7 @@ export default function NutritionScreen() {
                         </Text>
                       </View>
                     </View>
-                    
+
                     <View style={styles.mealHeaderRight}>
                       {meal.isCompleted && (
                         <View style={styles.checkCircle}>
@@ -693,10 +693,10 @@ export default function NutritionScreen() {
                               )}
                             </View>
                           )}
-                          
+
                           <View style={styles.foodMainInfo}>
                             <View style={[
-                              styles.categoryDot, 
+                              styles.categoryDot,
                               { backgroundColor: getCategoryColor(food.category) }
                             ]} />
                             <View style={styles.foodDetails}>
@@ -708,10 +708,10 @@ export default function NutritionScreen() {
                               </Text>
                             </View>
                           </View>
-                          
+
                           {selectedDay?.isToday && (
                             <View style={styles.foodActions}>
-                              <Pressable 
+                              <Pressable
                                 style={styles.removeButton}
                                 onPress={() => removeFoodFromMeal(meal.id, food.id)}
                               >
@@ -724,20 +724,20 @@ export default function NutritionScreen() {
                     </View>
                   ) : meal.foods.length > 0 && meal.isCompleted ? (
                     <>
-                      <Pressable 
+                      <Pressable
                         style={styles.expandButton}
                         onPress={() => toggleMealExpanded(meal.id)}
                       >
                         <Text style={styles.expandButtonText}>
                           Ver {meal.foods.length} ingrediente{meal.foods.length > 1 ? 's' : ''}
                         </Text>
-                        <MaterialCommunityIcons 
-                          name={meal.isExpanded ? "chevron-up" : "chevron-down"} 
-                          size={20} 
-                          color="#FFFFFF" 
+                        <MaterialCommunityIcons
+                          name={meal.isExpanded ? "chevron-up" : "chevron-down"}
+                          size={20}
+                          color="#FFFFFF"
                         />
                       </Pressable>
-                      
+
                       {meal.isExpanded && (
                         <View style={styles.foodsList}>
                           {meal.foods.map((food) => (
@@ -752,10 +752,10 @@ export default function NutritionScreen() {
                                   )}
                                 </View>
                               )}
-                              
+
                               <View style={styles.foodMainInfo}>
                                 <View style={[
-                                  styles.categoryDot, 
+                                  styles.categoryDot,
                                   { backgroundColor: getCategoryColor(food.category) }
                                 ]} />
                                 <View style={styles.foodDetails}>
@@ -774,10 +774,10 @@ export default function NutritionScreen() {
                     </>
                   ) : (
                     <View style={styles.emptyMeal}>
-                      <MaterialCommunityIcons 
-                        name="silverware-fork-knife" 
-                        size={32} 
-                        color={meal.isCompleted ? "rgba(255, 255, 255, 0.6)" : "#6B7280"} 
+                      <MaterialCommunityIcons
+                        name="silverware-fork-knife"
+                        size={32}
+                        color={meal.isCompleted ? "rgba(255, 255, 255, 0.6)" : "#6B7280"}
                       />
                       <Text style={[styles.emptyMealText, meal.isCompleted && styles.emptyMealTextCompleted]}>
                         No hay alimentos registrados
@@ -788,17 +788,17 @@ export default function NutritionScreen() {
                   {selectedDay?.isToday && (
                     <View style={styles.mealActions}>
                       {meal.foods.length > 0 && (
-                        <Pressable 
+                        <Pressable
                           style={[
-                            styles.actionButton, 
+                            styles.actionButton,
                             meal.isCompleted ? styles.cancelButton : styles.confirmButton
                           ]}
                           onPress={() => toggleMealCompleted(meal.id)}
                         >
-                          <MaterialCommunityIcons 
-                            name={meal.isCompleted ? "close" : "check"} 
-                            size={18} 
-                            color="#FFFFFF" 
+                          <MaterialCommunityIcons
+                            name={meal.isCompleted ? "close" : "check"}
+                            size={18}
+                            color="#FFFFFF"
                           />
                           <Text style={styles.actionButtonText}>
                             {meal.isCompleted ? 'Cancelar' : 'Confirmar'}
@@ -806,7 +806,7 @@ export default function NutritionScreen() {
                         </Pressable>
                       )}
 
-                      <Pressable 
+                      <Pressable
                         style={[styles.actionButton, styles.addIngredientButton]}
                         onPress={() => openAddFoodForMeal(meal.id)}
                       >
@@ -832,7 +832,7 @@ export default function NutritionScreen() {
                     <MaterialCommunityIcons name="water" size={28} color="#60A5FA" />
                     <Text style={styles.hydrationTitle}>Hidratación</Text>
                   </View>
-                  
+
                   <View style={styles.waterDisplay}>
                     <Text style={styles.waterAmount}>
                       {waterIntake}
@@ -846,7 +846,7 @@ export default function NutritionScreen() {
                     style={styles.progressBar}
                     color="#60A5FA"
                   />
-                  
+
                   <Text style={styles.progressText}>
                     {Math.round(waterPercentage)}% del objetivo diario
                     {waterIntake > waterGoal && (
@@ -856,7 +856,7 @@ export default function NutritionScreen() {
 
                   <View style={styles.waterActions}>
                     {[250, 500, 750].map((amount) => (
-                      <Pressable 
+                      <Pressable
                         key={amount}
                         style={styles.waterButton}
                         onPress={() => addWater(amount)}
@@ -872,7 +872,7 @@ export default function NutritionScreen() {
                       <Text style={styles.removeWaterText}>¿Te equivocaste?</Text>
                       <View style={styles.removeWaterActions}>
                         {[250, 500, 750].map((amount) => (
-                          <Pressable 
+                          <Pressable
                             key={`remove-${amount}`}
                             style={styles.removeWaterButton}
                             onPress={() => removeWater(amount)}
@@ -930,15 +930,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
+
   safeArea: {
     flex: 1,
   },
-  
+
   scrollView: {
     flex: 1,
   },
-  
+
   scrollContent: {
     padding: 20,
     paddingBottom: 40,
@@ -948,14 +948,14 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     paddingTop: 20,
   },
-  
+
   title: {
     fontSize: 32,
     fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 4,
   },
-  
+
   subtitle: {
     fontSize: 16,
     color: '#B0B0C4',
@@ -1501,7 +1501,7 @@ const styles = StyleSheet.create({
   mealTimeCompleted: {
     color: 'rgba(255, 255, 255, 0.9)',
   },
-  
+
   checkCircle: {
     width: 28,
     height: 28,
@@ -1510,7 +1510,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
+
   mealCaloriesCompleted: {
     color: '#FFFFFF',
     fontWeight: '700',

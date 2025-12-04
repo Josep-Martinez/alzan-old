@@ -7,7 +7,6 @@ import {
   Keyboard,
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,6 +14,7 @@ import {
   Vibration,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import RestTimerBar from '../common/RestTimerBar';
 import {
   GymExercise,
@@ -66,7 +66,7 @@ export default function ActiveWorkoutSession({
     name: string;
     targetDuration?: number;
   } | null>(null);
-  
+
   // ===== ANIMACIONES =====
   const [scaleAnim] = useState(new Animated.Value(1));
 
@@ -82,31 +82,31 @@ export default function ActiveWorkoutSession({
   // Crear lista unificada de "estaciones" (ejercicios individuales + superseries)
   const getWorkoutStations = () => {
     const stations: { type: 'exercise' | 'superset'; data: GymExercise | SuperSet }[] = [];
-    
+
     // Ejercicios individuales (no en superseries)
-    const individualExercises = exercises.filter(ex => 
+    const individualExercises = exercises.filter(ex =>
       !supersets.some(ss => ss.exercises.some(ssEx => ssEx.id === ex.id))
     );
-    
+
     individualExercises.forEach(ex => {
       stations.push({ type: 'exercise', data: ex });
     });
-    
+
     // Superseries
     supersets.forEach(ss => {
       stations.push({ type: 'superset', data: ss });
     });
-    
+
     return stations;
   };
 
   const stations = getWorkoutStations();
   const currentStation = stations[currentStationIndex];
-  
+
   // Obtener ejercicio actual
   const getCurrentExercise = (): GymExercise | null => {
     if (!currentStation) return null;
-    
+
     if (currentStation.type === 'exercise') {
       return currentStation.data as GymExercise;
     } else {
@@ -174,11 +174,11 @@ export default function ActiveWorkoutSession({
 
     if (currentStation.type === 'superset') {
       const superset = currentStation.data as SuperSet;
-      
+
       // Si quedan más ejercicios en la superserie
       if (currentExerciseInSuperset < superset.exercises.length - 1) {
         setCurrentExerciseInSuperset(currentExerciseInSuperset + 1);
-        
+
         // Descanso entre ejercicios si está configurado
         if (superset.restTimeBetweenExercises && parseInt(superset.restTimeBetweenExercises) > 0) {
           startRestTimer(parseInt(superset.restTimeBetweenExercises), 'exercise');
@@ -189,7 +189,7 @@ export default function ActiveWorkoutSession({
           // Siguiente ronda
           setCurrentRound(currentRound + 1);
           setCurrentExerciseInSuperset(0);
-          
+
           // Descanso entre rondas
           startRestTimer(parseInt(superset.restTimeBetweenRounds || '90'), 'round');
         } else {
@@ -208,11 +208,11 @@ export default function ActiveWorkoutSession({
     } else {
       // Ejercicio individual
       const exercise = currentStation.data as GymExercise;
-      
+
       if (currentSetIndex < exercise.sets.length - 1) {
         // Siguiente serie
         setCurrentSetIndex(currentSetIndex + 1);
-        
+
         // Descanso entre series
         startRestTimer(parseInt(exercise.restTime || '60'), 'set');
       } else {
@@ -264,12 +264,12 @@ export default function ActiveWorkoutSession({
     if (currentStation.type === 'superset') {
       const superset = currentStation.data as SuperSet;
       const supersetIndex = supersets.findIndex(ss => ss.id === superset.id);
-      
+
       const updatedExercises = superset.exercises.map((ex, idx) => {
         if (idx === currentExerciseInSuperset) {
           return {
             ...ex,
-            sets: ex.sets.map((set, setIdx) => 
+            sets: ex.sets.map((set, setIdx) =>
               setIdx === 0 ? { ...set, [field]: value } : set
             )
           };
@@ -289,7 +289,7 @@ export default function ActiveWorkoutSession({
         if (ex.id === currentExercise.id) {
           return {
             ...ex,
-            sets: ex.sets.map((set, setIdx) => 
+            sets: ex.sets.map((set, setIdx) =>
               setIdx === currentSetIndex ? { ...set, [field]: value } : set
             )
           };
@@ -321,18 +321,18 @@ export default function ActiveWorkoutSession({
     // Actualizar ronda completada si es superserie
     if (currentStation.type === 'superset') {
       const superset = currentStation.data as SuperSet;
-      
+
       // Si es el último ejercicio de la ronda
       if (currentExerciseInSuperset === superset.exercises.length - 1) {
         const supersetIndex = supersets.findIndex(ss => ss.id === superset.id);
         const updatedSuperset: SuperSet = {
           ...superset,
-          roundCompleted: superset.roundCompleted.map((completed, idx) => 
+          roundCompleted: superset.roundCompleted.map((completed, idx) =>
             idx === currentRound - 1 ? true : completed
           )
         };
         onUpdateSuperset(supersetIndex, updatedSuperset);
-        
+
         // Vibración especial para fin de ronda
         Vibration.vibrate([0, 200, 100, 200]);
       }
@@ -361,7 +361,7 @@ export default function ActiveWorkoutSession({
     if (!currentExercise || currentExercise.exerciseType !== 'Tiempo') return;
 
     const targetDuration = currentSet?.duration ? parseInt(currentSet.duration) : undefined;
-    
+
     setTimerExerciseInfo({
       name: currentExercise.name,
       targetDuration
@@ -376,7 +376,7 @@ export default function ActiveWorkoutSession({
     updateCurrentSet('actualDuration', actualDuration);
     setShowExerciseTimer(false);
     setTimerExerciseInfo(null);
-    
+
     // Completar automáticamente
     completeCurrentSet();
   };
@@ -491,7 +491,7 @@ export default function ActiveWorkoutSession({
 
           {/* ===== NAVEGACIÓN ENTRE ESTACIONES ===== */}
           <View style={styles.stationNav}>
-            <Pressable 
+            <Pressable
               onPress={navigateToPreviousStation}
               style={[styles.navBtn, currentStationIndex === 0 && styles.navBtnDisabled]}
               disabled={currentStationIndex === 0}
@@ -510,7 +510,7 @@ export default function ActiveWorkoutSession({
               )}
             </View>
 
-            <Pressable 
+            <Pressable
               onPress={navigateToNextStation}
               style={[styles.navBtn, currentStationIndex === stations.length - 1 && styles.navBtnDisabled]}
               disabled={currentStationIndex === stations.length - 1}
@@ -529,8 +529,8 @@ export default function ActiveWorkoutSession({
               <LinearGradient
                 colors={
                   currentStation.type === 'superset'
-                    ? [getSupersetColor((currentStation.data as SuperSet).type) + '33', 
-                       getSupersetColor((currentStation.data as SuperSet).type) + '1A']
+                    ? [getSupersetColor((currentStation.data as SuperSet).type) + '33',
+                    getSupersetColor((currentStation.data as SuperSet).type) + '1A']
                     : ['#2D2D5F', '#3D3D7F']
                 }
                 style={styles.exerciseGradient}
@@ -543,15 +543,15 @@ export default function ActiveWorkoutSession({
                         <MaterialCommunityIcons
                           name={
                             (currentStation.data as SuperSet).type === 'superset' ? 'lightning-bolt' :
-                            (currentStation.data as SuperSet).type === 'triset' ? 'flash' :
-                            (currentStation.data as SuperSet).type === 'circuit' ? 'refresh-circle' :
-                            'fire'
+                              (currentStation.data as SuperSet).type === 'triset' ? 'flash' :
+                                (currentStation.data as SuperSet).type === 'circuit' ? 'refresh-circle' :
+                                  'fire'
                           }
                           size={20}
                           color={getSupersetColor((currentStation.data as SuperSet).type)}
                         />
-                        <Text style={[styles.supersetTypeBadge, { 
-                          color: getSupersetColor((currentStation.data as SuperSet).type) 
+                        <Text style={[styles.supersetTypeBadge, {
+                          color: getSupersetColor((currentStation.data as SuperSet).type)
                         }]}>
                           {getSupersetTypeName((currentStation.data as SuperSet).type).toUpperCase()}
                         </Text>
@@ -565,7 +565,7 @@ export default function ActiveWorkoutSession({
                         Ronda {currentRound} de {(currentStation.data as SuperSet).totalRounds}
                       </Text>
                     </View>
-                    
+
                     {/* Indicadores de rondas */}
                     <View style={styles.roundIndicators}>
                       {Array.from({ length: (currentStation.data as SuperSet).totalRounds }).map((_, idx) => (
@@ -597,7 +597,7 @@ export default function ActiveWorkoutSession({
                       styles.typeBadge,
                       { backgroundColor: currentExercise.exerciseType === 'Tiempo' ? '#FFB84D' : '#4ECDC4' }
                     ]}>
-                      <MaterialCommunityIcons 
+                      <MaterialCommunityIcons
                         name={currentExercise.exerciseType === 'Tiempo' ? 'timer' : 'numeric'}
                         size={12}
                         color="#FFFFFF"
@@ -743,7 +743,7 @@ export default function ActiveWorkoutSession({
                       </Pressable>
                     )}
 
-                    <Pressable 
+                    <Pressable
                       onPress={completeCurrentSet}
                       style={[
                         styles.completeBtn,
@@ -753,16 +753,16 @@ export default function ActiveWorkoutSession({
                     >
                       <LinearGradient
                         colors={
-                          currentSet?.completed 
+                          currentSet?.completed
                             ? ['#6B7280', '#4B5563']
                             : ['#00D4AA', '#00B894']
                         }
                         style={styles.completeBtnGradient}
                       >
-                        <MaterialCommunityIcons 
-                          name={currentSet?.completed ? "check" : "check-circle"} 
-                          size={32} 
-                          color="#FFFFFF" 
+                        <MaterialCommunityIcons
+                          name={currentSet?.completed ? "check" : "check-circle"}
+                          size={32}
+                          color="#FFFFFF"
                         />
                         <Text style={styles.completeBtnText}>
                           {currentSet?.completed ? 'Completada' : 'Completar'}
@@ -775,12 +775,12 @@ export default function ActiveWorkoutSession({
                   {currentStation.type === 'exercise' && currentExercise.sets.length > 1 && (
                     <View style={styles.exerciseProgressInfo}>
                       <View style={styles.setsProgressBar}>
-                        <View 
+                        <View
                           style={[
                             styles.setsProgressFill,
-                            { 
-                              width: `${((currentExercise.sets.filter(s => s.completed).length) / 
-                                         currentExercise.sets.length) * 100}%` 
+                            {
+                              width: `${((currentExercise.sets.filter(s => s.completed).length) /
+                                currentExercise.sets.length) * 100}%`
                             }
                           ]}
                         />
@@ -809,21 +809,21 @@ export default function ActiveWorkoutSession({
                   <Text style={styles.previewTitle}>
                     Flujo del {getSupersetTypeName((currentStation.data as SuperSet).type)}
                   </Text>
-                  {(currentStation.data as SuperSet).restTimeBetweenExercises && 
-                   parseInt((currentStation.data as SuperSet).restTimeBetweenExercises!) > 0 && (
-                    <View style={styles.restIndicator}>
-                      <MaterialCommunityIcons name="timer-sand" size={14} color="#FFB84D" />
-                      <Text style={styles.restIndicatorText}>
-                        {(currentStation.data as SuperSet).restTimeBetweenExercises}s entre ejercicios
-                      </Text>
-                    </View>
-                  )}
+                  {(currentStation.data as SuperSet).restTimeBetweenExercises &&
+                    parseInt((currentStation.data as SuperSet).restTimeBetweenExercises!) > 0 && (
+                      <View style={styles.restIndicator}>
+                        <MaterialCommunityIcons name="timer-sand" size={14} color="#FFB84D" />
+                        <Text style={styles.restIndicatorText}>
+                          {(currentStation.data as SuperSet).restTimeBetweenExercises}s entre ejercicios
+                        </Text>
+                      </View>
+                    )}
                 </View>
-                
+
                 <View style={styles.supersetExercisesList}>
                   {(currentStation.data as SuperSet).exercises.map((ex, idx) => (
                     <View key={ex.id}>
-                      <View 
+                      <View
                         style={[
                           styles.supersetExerciseItem,
                           idx === currentExerciseInSuperset && styles.supersetExerciseItemActive,
@@ -832,8 +832,10 @@ export default function ActiveWorkoutSession({
                       >
                         <View style={[
                           styles.exerciseNumber,
-                          { backgroundColor: idx === currentExerciseInSuperset ? '#00D4AA' : 
-                                             idx < currentExerciseInSuperset ? '#6B7280' : '#B0B0C4' }
+                          {
+                            backgroundColor: idx === currentExerciseInSuperset ? '#00D4AA' :
+                              idx < currentExerciseInSuperset ? '#6B7280' : '#B0B0C4'
+                          }
                         ]}>
                           {idx < currentExerciseInSuperset ? (
                             <MaterialCommunityIcons name="check" size={16} color="#FFFFFF" />
@@ -849,11 +851,11 @@ export default function ActiveWorkoutSession({
                             {ex.name}
                           </Text>
                           <Text style={styles.exercisePreviewDetails}>
-                            {ex.sets.length > 0 && ex.sets[0].duration 
+                            {ex.sets.length > 0 && ex.sets[0].duration
                               ? `⏱️ ${ex.sets[0].duration}s`
                               : ex.sets.length > 0 && ex.sets[0].reps
-                              ? `🔢 ${ex.sets[0].reps} reps`
-                              : '❌ Sin configurar'
+                                ? `🔢 ${ex.sets[0].reps} reps`
+                                : '❌ Sin configurar'
                             }
                             {ex.sets.length > 0 && ex.sets[0].weight && ` • ${ex.sets[0].weight}kg`}
                           </Text>
@@ -864,26 +866,26 @@ export default function ActiveWorkoutSession({
                           </View>
                         )}
                       </View>
-                      
+
                       {/* Indicador de descanso entre ejercicios */}
-                      {idx < (currentStation.data as SuperSet).exercises.length - 1 && 
-                       (currentStation.data as SuperSet).restTimeBetweenExercises && 
-                       parseInt((currentStation.data as SuperSet).restTimeBetweenExercises!) > 0 && (
-                        <View style={styles.restBetweenIndicator}>
-                          <View style={styles.restLine} />
-                          <View style={styles.restBadge}>
-                            <MaterialCommunityIcons name="timer" size={12} color="#FFB84D" />
-                            <Text style={styles.restBadgeText}>
-                              {(currentStation.data as SuperSet).restTimeBetweenExercises}s
-                            </Text>
+                      {idx < (currentStation.data as SuperSet).exercises.length - 1 &&
+                        (currentStation.data as SuperSet).restTimeBetweenExercises &&
+                        parseInt((currentStation.data as SuperSet).restTimeBetweenExercises!) > 0 && (
+                          <View style={styles.restBetweenIndicator}>
+                            <View style={styles.restLine} />
+                            <View style={styles.restBadge}>
+                              <MaterialCommunityIcons name="timer" size={12} color="#FFB84D" />
+                              <Text style={styles.restBadgeText}>
+                                {(currentStation.data as SuperSet).restTimeBetweenExercises}s
+                              </Text>
+                            </View>
+                            <View style={styles.restLine} />
                           </View>
-                          <View style={styles.restLine} />
-                        </View>
-                      )}
+                        )}
                     </View>
                   ))}
                 </View>
-                
+
                 {/* Indicador de descanso entre rondas */}
                 <View style={styles.roundRestInfo}>
                   <MaterialCommunityIcons name="refresh" size={16} color="#4ECDC4" />
@@ -922,8 +924,8 @@ export default function ActiveWorkoutSession({
                               {(station.data as SuperSet).name}
                             </Text>
                             <Text style={styles.upcomingType}>
-                              {getSupersetTypeName((station.data as SuperSet).type)} - 
-                              {(station.data as SuperSet).exercises.length} ejercicios × 
+                              {getSupersetTypeName((station.data as SuperSet).type)} -
+                              {(station.data as SuperSet).exercises.length} ejercicios ×
                               {(station.data as SuperSet).totalRounds} rondas
                             </Text>
                           </>
@@ -961,33 +963,33 @@ export default function ActiveWorkoutSession({
                     style={styles.restTimerGradient}
                   >
                     <View style={styles.restTimerHeader}>
-                      <MaterialCommunityIcons 
+                      <MaterialCommunityIcons
                         name={
                           restContext === 'set' ? 'dumbbell' :
-                          restContext === 'exercise' ? 'run' :
-                          'refresh'
+                            restContext === 'exercise' ? 'run' :
+                              'refresh'
                         }
-                        size={24} 
-                        color="#FFB84D" 
+                        size={24}
+                        color="#FFB84D"
                       />
                       <Text style={styles.restTimerTitle}>
                         {getRestContextText()}
                       </Text>
                     </View>
-                    
+
                     {/* Información adicional según contexto */}
                     {restContext === 'exercise' && currentStation.type === 'superset' && (
                       <Text style={styles.restTimerSubtext}>
                         Siguiente: {(currentStation.data as SuperSet).exercises[currentExerciseInSuperset + 1]?.name}
                       </Text>
                     )}
-                    
+
                     {restContext === 'round' && currentStation.type === 'superset' && (
                       <Text style={styles.restTimerSubtext}>
                         Próxima ronda: {currentRound + 1} de {(currentStation.data as SuperSet).totalRounds}
                       </Text>
                     )}
-                    
+
                     <RestTimerBar
                       duration={restDuration}
                       onComplete={() => setShowRestTimer(false)}

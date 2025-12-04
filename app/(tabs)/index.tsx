@@ -2,17 +2,18 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router'; // Importar router para navegación
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProgressBar } from 'react-native-paper';
 
 export default function HomeScreen() {
   /* --- DATOS MOCK PARA DEMOSTRACIÓN --- */
-  const userName = 'Josep';                                                  
-  const kcalConsumed = 1250;                  
+  const userName = 'Josep';
+  const kcalConsumed = 1250;
   const kcalGoal = 2000;
   const steps = 7832;
   const stepsGoal = 10000;
-  
+
   // Calcular porcentajes de progreso
   const progressPercentage = (kcalConsumed / kcalGoal) * 100;
   const stepsPercentage = (steps / stepsGoal) * 100;
@@ -36,7 +37,7 @@ export default function HomeScreen() {
       {/* Área segura para evitar elementos del sistema */}
       <SafeAreaView style={styles.safeArea}>
         {/* ScrollView para permitir desplazamiento vertical */}
-        <ScrollView 
+        <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false} // Oculta barra de scroll
@@ -85,11 +86,11 @@ export default function HomeScreen() {
                 <MaterialCommunityIcons name="fire" size={28} color="#FF6B6B" />
                 <Text style={styles.statsTitle}>Calorías de Hoy</Text>
               </View>
-              
+
               {/* Información principal de calorías */}
               <View style={styles.calorieInfo}>
                 <Text style={styles.calorieMain}>
-                  {kcalConsumed.toLocaleString()} 
+                  {kcalConsumed.toLocaleString()}
                   <Text style={styles.calorieGoal}> / {kcalGoal.toLocaleString()}</Text>
                 </Text>
                 <Text style={styles.calorieLabel}>kcal</Text>
@@ -101,7 +102,7 @@ export default function HomeScreen() {
                 style={styles.progressBar}
                 color="#00D4AA" // Color verde para el progreso
               />
-              
+
               {/* Texto de porcentaje completado */}
               <Text style={styles.progressText}>
                 {Math.round(progressPercentage)}% completado
@@ -120,11 +121,11 @@ export default function HomeScreen() {
                 <MaterialCommunityIcons name="walk" size={28} color="#00D4AA" />
                 <Text style={styles.statsTitle}>Pasos Diarios</Text>
               </View>
-              
+
               {/* Información principal de pasos */}
               <View style={styles.calorieInfo}>
                 <Text style={styles.calorieMain}>
-                  {steps.toLocaleString()} 
+                  {steps.toLocaleString()}
                   <Text style={styles.calorieGoal}> / {stepsGoal.toLocaleString()}</Text>
                 </Text>
                 <Text style={styles.calorieLabel}>pasos</Text>
@@ -136,7 +137,7 @@ export default function HomeScreen() {
                 style={styles.progressBar}
                 color="#FF6B6B" // Color rojo para el progreso
               />
-              
+
               {/* Texto de porcentaje completado */}
               <Text style={styles.progressText}>
                 {Math.round(stepsPercentage)}% completado
@@ -153,7 +154,7 @@ export default function HomeScreen() {
                 // Lógica para determinar estado de cada día
                 const isCompleted = index < 4; // Días completados (mock)
                 const isToday = index === 3;   // Día actual (jueves en este ejemplo)
-                
+
                 return (
                   <View key={day} style={styles.dayContainer}>
                     {/* Etiqueta del día */}
@@ -171,10 +172,10 @@ export default function HomeScreen() {
                     ]}>
                       {/* Checkmark para días completados */}
                       {isCompleted && (
-                        <MaterialCommunityIcons 
-                          name="check" 
-                          size={12} 
-                          color="#FFFFFF" 
+                        <MaterialCommunityIcons
+                          name="check"
+                          size={12}
+                          color="#FFFFFF"
                         />
                       )}
                     </View>
@@ -195,29 +196,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
+
   // Área segura para dispositivos con notch
   safeArea: {
     flex: 1,
   },
-  
+
   // ScrollView principal
   scrollView: {
     flex: 1,
   },
-  
+
   // Contenido del scroll con padding
   scrollContent: {
     padding: 20,
     paddingBottom: 40, // Padding extra para mejor experiencia de scroll
   },
-  
+
   // Encabezado con saludo
   header: {
     marginBottom: 24,
     paddingTop: 20,
   },
-  
+
   // Texto principal del saludo
   greeting: {
     fontSize: 32,
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 4,
   },
-  
+
   // Subtítulo motivacional
   subtitle: {
     fontSize: 16,

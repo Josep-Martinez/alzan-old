@@ -9,13 +9,13 @@ import {
   Image,
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // ⬇️ nuestro nuevo servicio IA
 import {
@@ -26,17 +26,17 @@ import {
 
 // ⚙️ props
 interface Props {
-  visible:    boolean;
-  onAdd:      (name: string, qty: string, nutrition: NutritionData) => void;
-  onClose:    () => void;
+  visible: boolean;
+  onAdd: (name: string, qty: string, nutrition: NutritionData) => void;
+  onClose: () => void;
 }
 
 export default function AddFoodModal({ visible, onAdd, onClose }: Props) {
   // ---------- estado del componente ----------
-  const [foodDesc,      setFoodDesc]      = useState('');        // texto ("100 g arroz")
-  const [photoUri,      setPhotoUri]      = useState<string>();  // uri de la foto
-  const [nutrition,     setNutrition]     = useState<NutritionData | null>(null);
-  const [isAnalyzing,   setIsAnalyzing]   = useState(false);
+  const [foodDesc, setFoodDesc] = useState('');        // texto ("100 g arroz")
+  const [photoUri, setPhotoUri] = useState<string>();  // uri de la foto
+  const [nutrition, setNutrition] = useState<NutritionData | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   /*----------------------------------------------------------
    *  FUNCIÓN: lanzar cámara y analizar imagen con Spoonacular
@@ -206,20 +206,20 @@ export default function AddFoodModal({ visible, onAdd, onClose }: Props) {
 
 /* ---------------- estilos ---------------- */
 const styles = StyleSheet.create({
-  container:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)' },
-  header:      { flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: '#1F2937' },
+  container: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: '#1F2937' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
-  content:     { padding: 20 },
-  block:       { marginBottom: 24 },
-  label:       { color: '#D1D5DB', marginBottom: 8 },
-  input:       { backgroundColor: '#fff', padding: 12, borderRadius: 8 },
-  analyzeBtn:  { alignSelf: 'flex-start', marginTop: 8, backgroundColor: '#00D4AA', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  analyzeTxt:  { color: '#fff' },
-  photo:       { width: '100%', height: 180, borderRadius: 10, marginTop: 8 },
-  photoActions:{ flexDirection: 'row', gap: 20, marginTop: 12 },
-  resultBox:   { backgroundColor: '#1F2937', padding: 16, borderRadius: 10 },
-  resultLine:  { color: '#fff' },
-  addBtn:      { margin: 20 },
-  addBtnGradient:{ paddingVertical: 14, borderRadius: 30, alignItems: 'center' },
-  addBtnText:  { color: '#fff', fontSize: 16, fontWeight: '700' },
+  content: { padding: 20 },
+  block: { marginBottom: 24 },
+  label: { color: '#D1D5DB', marginBottom: 8 },
+  input: { backgroundColor: '#fff', padding: 12, borderRadius: 8 },
+  analyzeBtn: { alignSelf: 'flex-start', marginTop: 8, backgroundColor: '#00D4AA', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  analyzeTxt: { color: '#fff' },
+  photo: { width: '100%', height: 180, borderRadius: 10, marginTop: 8 },
+  photoActions: { flexDirection: 'row', gap: 20, marginTop: 12 },
+  resultBox: { backgroundColor: '#1F2937', padding: 16, borderRadius: 10 },
+  resultLine: { color: '#fff' },
+  addBtn: { margin: 20 },
+  addBtnGradient: { paddingVertical: 14, borderRadius: 30, alignItems: 'center' },
+  addBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

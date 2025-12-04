@@ -2,7 +2,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Importación de componentes modulares
 import { AddMeasurementModal } from '../../components/stats/AddMeasurementModal';
@@ -26,7 +27,7 @@ export default function StatsScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<'7dias' | '30dias' | '90dias'>('30dias');
 
   /* -------- DATOS ESTÁTICOS - TODO: Conectar con base de datos -------- */
-  
+
   // Métricas corporales actuales (algunas pueden no estar disponibles)
   const currentStats = {
     weight: 72.5,     // kg - peso actual (obligatorio)
@@ -167,33 +168,33 @@ export default function StatsScreen() {
 
   // Progreso semanal de entrenamientos con deportes
   const weeklyWorkouts = [
-    { 
-      hasWorkout: true, 
-      sports: [{ id: 'gimnasio', name: 'Gimnasio', color: '#FF6B6B', icon: 'dumbbell' }] 
+    {
+      hasWorkout: true,
+      sports: [{ id: 'gimnasio', name: 'Gimnasio', color: '#FF6B6B', icon: 'dumbbell' }]
     },
-    { 
-      hasWorkout: true, 
+    {
+      hasWorkout: true,
       sports: [
         { id: 'running', name: 'Running', color: '#4ECDC4', icon: 'run' },
         { id: 'yoga', name: 'Yoga', color: '#FECA57', icon: 'meditation' }
-      ] 
+      ]
     },
     { hasWorkout: false, sports: [] },
-    { 
-      hasWorkout: true, 
-      sports: [{ id: 'gimnasio', name: 'Gimnasio', color: '#FF6B6B', icon: 'dumbbell' }] 
+    {
+      hasWorkout: true,
+      sports: [{ id: 'gimnasio', name: 'Gimnasio', color: '#FF6B6B', icon: 'dumbbell' }]
     },
-    { 
-      hasWorkout: true, 
-      sports: [{ id: 'ciclismo', name: 'Ciclismo', color: '#45B7D1', icon: 'bike' }] 
+    {
+      hasWorkout: true,
+      sports: [{ id: 'ciclismo', name: 'Ciclismo', color: '#45B7D1', icon: 'bike' }]
     },
     { hasWorkout: false, sports: [] },
-    { 
-      hasWorkout: true, 
+    {
+      hasWorkout: true,
       sports: [
         { id: 'gimnasio', name: 'Gimnasio', color: '#FF6B6B', icon: 'dumbbell' },
         { id: 'natacion', name: 'Natación', color: '#96CEB4', icon: 'swim' }
-      ] 
+      ]
     },
   ];
 
@@ -229,7 +230,7 @@ export default function StatsScreen() {
   const getCurrentChartValue = () => {
     const data = getCurrentChartData();
     if (!data.length) return '0';
-    
+
     switch (selectedMetric) {
       case 'peso': return currentStats.weight.toString();
       case 'grasa': return currentStats.bodyFat?.toString() || '0';
@@ -245,7 +246,7 @@ export default function StatsScreen() {
   const getCurrentChartUnit = () => {
     switch (selectedMetric) {
       case 'peso': return 'kg';
-      case 'grasa': 
+      case 'grasa':
       case 'musculo': return '%';
       case 'cintura':
       case 'pecho':
@@ -287,7 +288,7 @@ export default function StatsScreen() {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
@@ -300,44 +301,44 @@ export default function StatsScreen() {
           {/* Métricas Principales */}
           <View style={styles.mainMetrics}>
             <Text style={styles.sectionTitle}>Métricas Corporales</Text>
-            
+
             <View style={styles.metricsGrid}>
-              <MetricCard 
-                icon="weight" 
-                label="Peso Actual" 
-                value={currentStats.weight.toString()} 
+              <MetricCard
+                icon="weight"
+                label="Peso Actual"
+                value={currentStats.weight.toString()}
                 unit="kg"
                 progress={getProgressToGoal(currentStats.weight, goals.weightGoal)}
                 goal={goals.weightGoal}
                 color="#00D4AA"
                 isAvailable={metricsAvailability.weight}
               />
-              
-              <MetricCard 
-                icon="human" 
-                label="IMC" 
-                value={bmi.toFixed(1)} 
+
+              <MetricCard
+                icon="human"
+                label="IMC"
+                value={bmi.toFixed(1)}
                 unit=""
                 subtitle={bmiInfo.category}
                 color={bmiInfo.color}
                 isAvailable={metricsAvailability.weight} // Depende del peso
               />
-              
-              <MetricCard 
-                icon="scale-bathroom" 
-                label="Grasa Corporal" 
-                value={currentStats.bodyFat?.toString() || '0'} 
+
+              <MetricCard
+                icon="scale-bathroom"
+                label="Grasa Corporal"
+                value={currentStats.bodyFat?.toString() || '0'}
                 unit="%"
                 progress={getProgressToGoal(currentStats.bodyFat || 0, goals.bodyFatGoal, true)}
                 goal={goals.bodyFatGoal}
                 color="#FF6B6B"
                 isAvailable={metricsAvailability.bodyFat}
               />
-              
-              <MetricCard 
-                icon="arm-flex" 
-                label="Masa Muscular" 
-                value={currentStats.muscle?.toString() || '0'} 
+
+              <MetricCard
+                icon="arm-flex"
+                label="Masa Muscular"
+                value={currentStats.muscle?.toString() || '0'}
                 unit="kg"
                 progress={getProgressToGoal(currentStats.muscle || 0, goals.muscleGoal)}
                 goal={goals.muscleGoal}
@@ -345,19 +346,19 @@ export default function StatsScreen() {
                 isAvailable={metricsAvailability.muscle}
               />
 
-              <MetricCard 
-                icon="water" 
-                label="Agua Corporal" 
-                value={currentStats.water?.toString() || '0'} 
+              <MetricCard
+                icon="water"
+                label="Agua Corporal"
+                value={currentStats.water?.toString() || '0'}
                 unit="%"
                 color="#42A5F5"
                 isAvailable={metricsAvailability.water}
               />
 
-              <MetricCard 
-                icon="ruler" 
-                label="Cintura" 
-                value={currentStats.waist?.toString() || '0'} 
+              <MetricCard
+                icon="ruler"
+                label="Cintura"
+                value={currentStats.waist?.toString() || '0'}
                 unit="cm"
                 progress={getProgressToGoal(currentStats.waist || 0, goals.waistGoal, true)}
                 goal={goals.waistGoal}
@@ -396,7 +397,7 @@ export default function StatsScreen() {
           />
 
           {/* Botón para añadir medición */}
-          <Pressable 
+          <Pressable
             style={styles.addMeasurementBtn}
             onPress={() => setShowAddModal(true)}
           >
@@ -427,29 +428,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
+
   safeArea: {
     flex: 1,
     backgroundColor: 'transparent',
   },
-  
+
   scrollContent: {
     paddingBottom: 20,
   },
-  
+
   header: {
     paddingHorizontal: 20,
     paddingTop: 20,
     marginBottom: 20,
   },
-  
+
   title: {
     fontSize: 32,
     fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 4,
   },
-  
+
   subtitle: {
     fontSize: 16,
     color: '#B0B0C4',
@@ -495,10 +496,10 @@ const styles = StyleSheet.create({
   },
 });
 
-  // Récords personales
-  const personalRecords = [
-    { id: '1', exercise: 'Press Banca', weight: 85, unit: 'kg', date: '2024-06-15', improvement: 2.5 },
-    { id: '2', exercise: 'Sentadilla', weight: 120, unit: 'kg', date: '2024-06-10', improvement: 5 },
-    { id: '3', exercise: 'Peso Muerto', weight: 140, unit: 'kg', date: '2024-06-08', improvement: 10 },
-    { id: '4', exercise: 'Press Militar', weight: 55, unit: 'kg', date: '2024-06-12', improvement: 2 },
-  ];
+// Récords personales
+const personalRecords = [
+  { id: '1', exercise: 'Press Banca', weight: 85, unit: 'kg', date: '2024-06-15', improvement: 2.5 },
+  { id: '2', exercise: 'Sentadilla', weight: 120, unit: 'kg', date: '2024-06-10', improvement: 5 },
+  { id: '3', exercise: 'Peso Muerto', weight: 140, unit: 'kg', date: '2024-06-08', improvement: 10 },
+  { id: '4', exercise: 'Press Militar', weight: 55, unit: 'kg', date: '2024-06-12', improvement: 2 },
+];

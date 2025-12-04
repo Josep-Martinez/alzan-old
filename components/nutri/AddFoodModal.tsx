@@ -7,13 +7,13 @@ import {
   Image,
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FoodScanner } from './FoodScanner';
 
 interface AddFoodModalProps {
@@ -27,7 +27,7 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
   const [foodName, setFoodName] = useState('');
   const [gramsAmount, setGramsAmount] = useState('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  
+
   // Estados para el escáner
   const [showScanner, setShowScanner] = useState(false);
   const [scannedProduct, setScannedProduct] = useState<any>(null);
@@ -40,7 +40,7 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
    */
   const takePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    
+
     if (permissionResult.granted === false) {
       alert('Se necesitan permisos de cámara para tomar fotos');
       return;
@@ -64,7 +64,7 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
    */
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (permissionResult.granted === false) {
       alert('Se necesitan permisos de galería para seleccionar fotos');
       return;
@@ -159,7 +159,7 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
     }
 
     const nutrition = calculateManualNutrition(grams);
-    
+
     onAddFood({
       name: foodName.trim(),
       quantity: `${grams}g`,
@@ -191,7 +191,7 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
       }
       quantity = `${grams}g`;
     }
-    
+
     onAddFood({
       name: scannedProduct.name,
       quantity: quantity,
@@ -212,12 +212,12 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
     setFoodName('');
     setGramsAmount('');
     setPhotoUri(null);
-    
+
     // Limpiar estados del escáner
     setScannedProduct(null);
     setProductQuantity('unit');
     setCustomGrams('');
-    
+
     onClose();
   };
 
@@ -267,7 +267,7 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
               <>
                 {/* BOTONES DE ACCIÓN PRINCIPALES */}
                 <View style={styles.mainActions}>
-                  <Pressable 
+                  <Pressable
                     style={[styles.actionCard, styles.scannerCard]}
                     onPress={() => setShowScanner(true)}
                   >
@@ -303,13 +303,13 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
                       <Text style={styles.photoPlaceholderSubtext}>
                         La IA detectará automáticamente los nutrientes en el futuro
                       </Text>
-                      
+
                       <View style={styles.photoButtons}>
                         <Pressable style={styles.photoButton} onPress={takePhoto}>
                           <MaterialCommunityIcons name="camera" size={20} color="#FFFFFF" />
                           <Text style={styles.photoButtonText}>Cámara</Text>
                         </Pressable>
-                        
+
                         <Pressable style={styles.photoButton} onPress={pickImage}>
                           <MaterialCommunityIcons name="image" size={20} color="#FFFFFF" />
                           <Text style={styles.photoButtonText}>Galería</Text>
@@ -348,7 +348,7 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
                   {foodName && gramsAmount && (
                     <View style={styles.nutritionPreview}>
                       <Text style={styles.nutritionPreviewTitle}>Valores nutricionales estimados</Text>
-                      
+
                       <View style={styles.nutritionGrid}>
                         {(() => {
                           const grams = parseInt(gramsAmount) || 0;
@@ -395,10 +395,10 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
                     styles.categoryBadge,
                     { backgroundColor: getCategoryColor(scannedProduct.category) }
                   ]}>
-                    <MaterialCommunityIcons 
+                    <MaterialCommunityIcons
                       name={getCategoryIcon(scannedProduct.category)}
-                      size={16} 
-                      color="#FFFFFF" 
+                      size={16}
+                      color="#FFFFFF"
                     />
                     <Text style={styles.categoryText}>
                       {getCategoryName(scannedProduct.category)}
@@ -435,19 +435,19 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
                 {/* SELECTOR DE CANTIDAD */}
                 <View style={styles.quantitySection}>
                   <Text style={styles.quantitySectionTitle}>¿Qué cantidad has consumido?</Text>
-                  
+
                   <View style={styles.quantityOptions}>
-                    <Pressable 
+                    <Pressable
                       style={[
                         styles.quantityOption,
                         productQuantity === 'unit' && styles.selectedQuantityOption
                       ]}
                       onPress={() => setProductQuantity('unit')}
                     >
-                      <MaterialCommunityIcons 
-                        name="package-variant" 
-                        size={24} 
-                        color={productQuantity === 'unit' ? '#00D4AA' : '#6B7280'} 
+                      <MaterialCommunityIcons
+                        name="package-variant"
+                        size={24}
+                        color={productQuantity === 'unit' ? '#00D4AA' : '#6B7280'}
                       />
                       <Text style={[
                         styles.quantityOptionText,
@@ -463,17 +463,17 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
                       </Text>
                     </Pressable>
 
-                    <Pressable 
+                    <Pressable
                       style={[
                         styles.quantityOption,
                         productQuantity === 'grams' && styles.selectedQuantityOption
                       ]}
                       onPress={() => setProductQuantity('grams')}
                     >
-                      <MaterialCommunityIcons 
-                        name="scale" 
-                        size={24} 
-                        color={productQuantity === 'grams' ? '#00D4AA' : '#6B7280'} 
+                      <MaterialCommunityIcons
+                        name="scale"
+                        size={24}
+                        color={productQuantity === 'grams' ? '#00D4AA' : '#6B7280'}
                       />
                       <Text style={[
                         styles.quantityOptionText,
@@ -547,16 +547,16 @@ export function AddFoodModal({ visible, onClose, onAddFood }: AddFoodModalProps)
 
           {/* ACCIONES DEL MODAL */}
           <View style={styles.modalActions}>
-            <Pressable 
+            <Pressable
               style={[styles.actionButton, styles.cancelButton]}
               onPress={handleClose}
             >
               <Text style={styles.actionButtonText}>Cancelar</Text>
             </Pressable>
-            
-            <Pressable 
+
+            <Pressable
               style={[
-                styles.actionButton, 
+                styles.actionButton,
                 styles.addButton,
                 (!scannedProduct && (!foodName.trim() || !gramsAmount.trim())) && styles.disabledButton,
                 (scannedProduct && productQuantity === 'grams' && !customGrams.trim()) && styles.disabledButton

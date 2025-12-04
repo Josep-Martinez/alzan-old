@@ -5,13 +5,13 @@ import { useState } from 'react';
 import {
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import PostWorkoutIntensity from '../../components/sport/common/PostWorkoutIntensity';
 import RestTimerBar from '../../components/sport/common/RestTimerBar';
 import {
@@ -92,11 +92,11 @@ export default function MainTrainingScreen() {
   const [showWorkoutNamer, setShowWorkoutNamer] = useState(false);
   const [pendingSport, setPendingSport] = useState<SportType | null>(null);
   const [pendingWorkoutName, setPendingWorkoutName] = useState('');
-  
+
   // ===== ESTADOS DE ENTRENAMIENTO ACTIVO =====
   const [activeWorkoutId, setActiveWorkoutId] = useState<string | null>(null);
   const [minimizedWorkouts, setMinimizedWorkouts] = useState<Set<string>>(new Set());
-  
+
   // ===== ESTADOS DE TIMER Y POST-ENTRENAMIENTO =====
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [restDuration, setRestDuration] = useState(60);
@@ -118,7 +118,7 @@ export default function MainTrainingScreen() {
     const today = new Date();
     const currentDay = today.getDay();
     const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-    
+
     return days.map((_, index) => {
       const date = new Date(today);
       date.setDate(today.getDate() + mondayOffset + index);
@@ -140,12 +140,12 @@ export default function MainTrainingScreen() {
   const getSelectedDayInfo = () => {
     const selectedDayInfo = weekDates.find(d => d.dayCode === selectedDay);
     if (!selectedDayInfo) return '';
-    
+
     const monthNames = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
-    
+
     return `${selectedDayInfo.date} de ${monthNames[selectedDayInfo.month - 1]}`;
   };
 
@@ -156,11 +156,11 @@ export default function MainTrainingScreen() {
   const generateDefaultWorkoutName = (sport: SportType): string => {
     const now = new Date();
     const dayInfo = getSelectedDayInfo();
-    const time = now.toLocaleTimeString('es-ES', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    const time = now.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
-    
+
     return `Entrenamiento de ${SPORT_TRANSLATIONS[sport]}, el ${dayInfo} ${time}`;
   };
 
@@ -175,42 +175,42 @@ export default function MainTrainingScreen() {
         return { sport: 'gym', data: [] };
       case 'running':
         // NOTA BD: RunningSession se guarda en tabla 'running_sessions'
-        return { 
-          sport: 'running', 
-          data: { 
+        return {
+          sport: 'running',
+          data: {
             type: 'long_run',
             plannedDistance: undefined,
             plannedDuration: undefined
-          } 
+          }
         };
       case 'cycling':
         // NOTA BD: CyclingSession se guarda en tabla 'cycling_sessions'
-        return { 
-          sport: 'cycling', 
-          data: { 
+        return {
+          sport: 'cycling',
+          data: {
             type: 'endurance',
             plannedDistance: undefined,
             plannedDuration: undefined
-          } 
+          }
         };
       case 'swimming':
         // NOTA BD: SwimmingSession se guarda en tabla 'swimming_sessions'
-        return { 
-          sport: 'swimming', 
-          data: { 
+        return {
+          sport: 'swimming',
+          data: {
             type: 'endurance',
             plannedDistance: undefined,
             poolLength: 25
-          } 
+          }
         };
       default:
         // NOTA BD: GenericSportSession se guarda en tabla 'generic_sport_sessions'
-        return { 
-          sport, 
-          data: { 
+        return {
+          sport,
+          data: {
             type: 'training',
             duration: undefined
-          } 
+          }
         };
     }
   };
@@ -277,11 +277,11 @@ export default function MainTrainingScreen() {
       ...prev,
       [selectedDay]: prev[selectedDay].map(workout =>
         workout.id === activeWorkoutId
-          ? { 
-              ...workout, 
-              session,
-              updatedAt: new Date().toISOString() // NOTA BD: Actualizar timestamp
-            }
+          ? {
+            ...workout,
+            session,
+            updatedAt: new Date().toISOString() // NOTA BD: Actualizar timestamp
+          }
           : workout
       )
     }));
@@ -359,26 +359,26 @@ export default function MainTrainingScreen() {
       ...prev,
       [selectedDay]: prev[selectedDay].map(workout =>
         workout.id === completingWorkoutId
-          ? { 
-              ...workout, 
-              completed: true, // NOTA BD: Campo 'completed'
-              completedAt, // NOTA BD: Campo 'completed_at'
-              updatedAt: completedAt, // NOTA BD: Campo 'updated_at'
-              // NOTA BD: Campo 'post_workout_data' como JSON, puede ser null si se omite
-              postWorkoutData: intensityData ? {
-                ...intensityData,
-                timestamp: completedAt
-              } : undefined
-            }
+          ? {
+            ...workout,
+            completed: true, // NOTA BD: Campo 'completed'
+            completedAt, // NOTA BD: Campo 'completed_at'
+            updatedAt: completedAt, // NOTA BD: Campo 'updated_at'
+            // NOTA BD: Campo 'post_workout_data' como JSON, puede ser null si se omite
+            postWorkoutData: intensityData ? {
+              ...intensityData,
+              timestamp: completedAt
+            } : undefined
+          }
           : workout
       )
     }));
 
     // Buscar siguiente entrenamiento incompleto
-    const remainingIncompleteWorkouts = todaysWorkouts.filter(w => 
+    const remainingIncompleteWorkouts = todaysWorkouts.filter(w =>
       w.id !== completingWorkoutId && !w.completed
     );
-    
+
     if (remainingIncompleteWorkouts.length > 0) {
       setActiveWorkoutId(remainingIncompleteWorkouts[0].id);
     } else {
@@ -408,14 +408,14 @@ export default function MainTrainingScreen() {
       ...prev,
       [selectedDay]: prev[selectedDay].map(workout =>
         workout.id === editingIntensityWorkoutId
-          ? { 
-              ...workout,
-              postWorkoutData: intensityData ? {
-                ...intensityData,
-                timestamp: workout.postWorkoutData?.timestamp || new Date().toISOString()
-              } : undefined,
-              updatedAt: new Date().toISOString()
-            }
+          ? {
+            ...workout,
+            postWorkoutData: intensityData ? {
+              ...intensityData,
+              timestamp: workout.postWorkoutData?.timestamp || new Date().toISOString()
+            } : undefined,
+            updatedAt: new Date().toISOString()
+          }
           : workout
       )
     }));
@@ -454,63 +454,63 @@ export default function MainTrainingScreen() {
           <GymSession
             exercises={(session as any).data || []}
             onUpdateExercises={
-              isCompleted 
-                ? () => {}
-                : (exercises: GymExercise[]) => 
-                    updateWorkoutSession({ sport: 'gym', data: exercises })
+              isCompleted
+                ? () => { }
+                : (exercises: GymExercise[]) =>
+                  updateWorkoutSession({ sport: 'gym', data: exercises })
             }
-            onStartRestTimer={isCompleted ? () => {} : startRestTimer}
+            onStartRestTimer={isCompleted ? () => { } : startRestTimer}
             onCompleteWorkout={isCompleted ? undefined : () => startCompleteWorkout(workout.id)}
             isCompleted={isCompleted}
             workoutName={workout.name || `Entrenamiento de ${SPORT_TRANSLATIONS[workout.sport]}`}
           />
         );
-      
+
       case 'running':
         return (
           <RunningSessionComponent
             session={(session as any).data || { type: 'long_run' }}
             onUpdateSession={
               isCompleted
-                ? () => {}
-                : (data: RunningSession) => 
-                    updateWorkoutSession({ sport: 'running', data })
+                ? () => { }
+                : (data: RunningSession) =>
+                  updateWorkoutSession({ sport: 'running', data })
             }
             onCompleteWorkout={isCompleted ? undefined : () => startCompleteWorkout(workout.id)}
             isCompleted={isCompleted}
           />
         );
-      
+
       case 'cycling':
         return (
           <CyclingSessionComponent
             session={(session as any).data || { type: 'endurance' }}
             onUpdateSession={
               isCompleted
-                ? () => {}
-                : (data: CyclingSession) => 
-                    updateWorkoutSession({ sport: 'cycling', data })
+                ? () => { }
+                : (data: CyclingSession) =>
+                  updateWorkoutSession({ sport: 'cycling', data })
             }
             onCompleteWorkout={isCompleted ? undefined : () => startCompleteWorkout(workout.id)}
             isCompleted={isCompleted}
           />
         );
-      
+
       case 'swimming':
         return (
           <SwimmingSessionComponent
             session={(session as any).data || { type: 'endurance', poolLength: 25 }}
             onUpdateSession={
               isCompleted
-                ? () => {}
-                : (data: SwimmingSession) => 
-                    updateWorkoutSession({ sport: 'swimming', data })
+                ? () => { }
+                : (data: SwimmingSession) =>
+                  updateWorkoutSession({ sport: 'swimming', data })
             }
             onCompleteWorkout={isCompleted ? undefined : () => startCompleteWorkout(workout.id)}
             isCompleted={isCompleted}
           />
         );
-      
+
       default:
         return (
           <GenericSportSessionComponent
@@ -518,9 +518,9 @@ export default function MainTrainingScreen() {
             sport={workout.sport}
             onUpdateSession={
               isCompleted
-                ? () => {}
-                : (data: GenericSportSession) => 
-                    updateWorkoutSession({ sport: workout.sport, data })
+                ? () => { }
+                : (data: GenericSportSession) =>
+                  updateWorkoutSession({ sport: workout.sport, data })
             }
             onCompleteWorkout={isCompleted ? undefined : () => startCompleteWorkout(workout.id)}
             isCompleted={isCompleted}
@@ -581,7 +581,7 @@ export default function MainTrainingScreen() {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
@@ -603,7 +603,7 @@ export default function MainTrainingScreen() {
                   📅 {getSelectedDayInfo()}
                 </Text>
               </View>
-              
+
               <View style={styles.weekRow}>
                 {weekDates.map((dayInfo, i) => {
                   const isSelected = dayInfo.dayCode === selectedDay;
@@ -636,7 +636,7 @@ export default function MainTrainingScreen() {
                         >
                           {dayInfo.dayCode}
                         </Text>
-                        
+
                         <Text
                           style={[
                             styles.dayDate,
@@ -657,7 +657,7 @@ export default function MainTrainingScreen() {
                               />
                             </View>
                           )}
-                          
+
                           {hasWorkout && (
                             <View style={styles.workoutIndicator}>
                               {dayTotalWorkouts > 0 && dayCompletedWorkouts === dayTotalWorkouts ? (
@@ -709,12 +709,12 @@ export default function MainTrainingScreen() {
                   {getDayName(selectedDay)} - {getSelectedDayInfo()}
                 </Text>
               </View>
-              
+
               <View style={styles.dayStatsRow}>
                 <Text style={styles.workoutCount}>
                   {completedWorkouts}/{totalWorkouts} entrenamientos completados
                 </Text>
-                
+
                 {totalWorkouts > 0 && (
                   <Text style={styles.progressPercentage}>
                     {Math.round(dayProgress)}%
@@ -725,11 +725,11 @@ export default function MainTrainingScreen() {
               {totalWorkouts > 0 && (
                 <View style={styles.dayProgressContainer}>
                   <View style={styles.dayProgressBackground}>
-                    <View 
+                    <View
                       style={[
-                        styles.dayProgressBar, 
+                        styles.dayProgressBar,
                         { width: `${dayProgress}%` }
-                      ]} 
+                      ]}
                     />
                   </View>
                 </View>
@@ -738,8 +738,8 @@ export default function MainTrainingScreen() {
           </View>
 
           {/* ===== BOTÓN AÑADIR ENTRENAMIENTO ===== */}
-          <Pressable 
-            onPress={() => setShowSportSelector(true)} 
+          <Pressable
+            onPress={() => setShowSportSelector(true)}
             style={styles.addWorkoutBtn}
           >
             <LinearGradient
@@ -756,7 +756,7 @@ export default function MainTrainingScreen() {
             const isActive = activeWorkoutId === workout.id;
             const isMinimized = minimizedWorkouts.has(workout.id);
             const isExpanded = isActive && !isMinimized;
-            
+
             return (
               <View key={workout.id} style={styles.workoutCard}>
                 {/* Header del entrenamiento */}
@@ -782,8 +782,8 @@ export default function MainTrainingScreen() {
                       workout.completed
                         ? ['#4ECDC4', '#26C6DA'] as [string, string]
                         : isExpanded
-                        ? SPORT_COLORS[workout.sport] as [string, string]
-                        : ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.02)']
+                          ? SPORT_COLORS[workout.sport] as [string, string]
+                          : ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.02)']
                     }
                     style={[
                       styles.workoutHeaderGradient,
@@ -806,7 +806,7 @@ export default function MainTrainingScreen() {
                           ]}>
                             {workout.name || `Entrenamiento de ${SPORT_TRANSLATIONS[workout.sport]}`}
                           </Text>
-                          
+
                           {workout.completed && (
                             <View style={styles.completedInfo}>
                               <View style={styles.completedBadge}>
@@ -817,7 +817,7 @@ export default function MainTrainingScreen() {
                                 />
                                 <Text style={styles.completedBadgeText}>COMPLETADO</Text>
                               </View>
-                              
+
                               {/* Mostrar datos de intensidad si existen */}
                               {workout.postWorkoutData && (
                                 <Pressable
@@ -830,7 +830,7 @@ export default function MainTrainingScreen() {
                                   <MaterialCommunityIcons name="pencil" size={12} color="#FFFFFF" />
                                 </Pressable>
                               )}
-                              
+
                               {/* Botón para añadir intensidad si no existe */}
                               {!workout.postWorkoutData && (
                                 <Pressable
@@ -922,7 +922,7 @@ export default function MainTrainingScreen() {
       </SafeAreaView>
 
       {/* ===== MODALES ===== */}
-      
+
       {/* Modal selector de deporte */}
       {showSportSelector && (
         <SportSelector
@@ -1019,7 +1019,7 @@ export default function MainTrainingScreen() {
             <Text style={styles.deleteConfirmationText}>
               Estás a punto de eliminar:
             </Text>
-            
+
             <Text style={styles.deleteConfirmationWorkoutName}>
               &quot;{getWorkoutToDeleteName()}&quot;
             </Text>
@@ -1063,7 +1063,7 @@ export default function MainTrainingScreen() {
           }}
           onSubmit={editingIntensityWorkoutId ? updateWorkoutIntensity : completeWorkoutWithIntensity}
           workoutName={
-            todaysWorkouts.find(w => w.id === (completingWorkoutId || editingIntensityWorkoutId))?.name || 
+            todaysWorkouts.find(w => w.id === (completingWorkoutId || editingIntensityWorkoutId))?.name ||
             'Entrenamiento'
           }
         />
@@ -1077,29 +1077,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0F0F23',
   },
-  
+
   safeArea: {
     flex: 1,
     backgroundColor: 'transparent',
   },
-  
+
   scrollContent: {
     paddingBottom: 20,
   },
-  
+
   header: {
     paddingHorizontal: 20,
     marginBottom: 20,
     paddingTop: 10,
   },
-  
+
   title: {
     fontSize: 32,
     fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 4,
   },
-  
+
   subtitle: {
     fontSize: 16,
     color: '#B0B0C4',

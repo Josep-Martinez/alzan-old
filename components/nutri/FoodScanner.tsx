@@ -8,11 +8,11 @@ import {
   Alert,
   Modal,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 /**
  * INTERFACE: Estructura de un producto escaneado
@@ -74,7 +74,7 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
   const fetchProductFromAPI = async (barcode: string): Promise<ScannedProduct | null> => {
     try {
       console.log(`🔍 Buscando producto con código: ${barcode}`);
-      
+
       const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`);
       const data = await response.json();
 
@@ -85,10 +85,10 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
 
       const product = data.product;
       console.log('✅ Producto encontrado:', product.product_name);
-      
+
       // Clasificar producto según NOVA y aditivos (estilo MyRealFood)
       const category = classifyProduct(product);
-      
+
       return {
         id: barcode,
         name: product.product_name || 'Producto desconocido',
@@ -139,18 +139,18 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
   const calculateHealthScore = (product: any): number => {
     const nutriscore = product.nutrition_grades;
     const nova = product.nova_group || 3;
-    
+
     let score = 5; // Puntuación base
-    
+
     // Ajustar por Nutri-Score (A=mejor, E=peor)
     const nutriscoreMap: { [key: string]: number } = {
       'a': 2, 'b': 1, 'c': 0, 'd': -1, 'e': -2
     };
     score += nutriscoreMap[nutriscore] || 0;
-    
+
     // Penalizar por nivel NOVA (1=mejor, 4=peor)
     score -= (nova - 1) * 1.5;
-    
+
     return Math.max(0, Math.min(10, score));
   };
 
@@ -170,7 +170,7 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
 
     try {
       const product = await fetchProductFromAPI(data);
-      
+
       if (product) {
         console.log('✅ Producto procesado, enviando datos');
         onProductScanned(product);
@@ -180,16 +180,16 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
           'Producto no encontrado',
           'Este producto no está en nuestra base de datos. ¿Quieres añadirlo con valores estimados?',
           [
-            { 
-              text: 'Cancelar', 
+            {
+              text: 'Cancelar',
               style: 'cancel',
               onPress: () => {
                 setIsScanning(false);
                 setLastScannedBarcode('');
               }
             },
-            { 
-              text: 'Añadir', 
+            {
+              text: 'Añadir',
               onPress: () => {
                 const basicProduct: ScannedProduct = {
                   id: data,
@@ -213,7 +213,7 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
     } catch (error) {
       console.error('🚨 Error durante el escaneo:', error);
       Alert.alert(
-        'Error', 
+        'Error',
         'No se pudo obtener información del producto. Inténtalo de nuevo.',
         [
           {
@@ -326,7 +326,7 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
                     <View style={[styles.corner, styles.bottomLeft]} />
                     <View style={[styles.corner, styles.bottomRight]} />
                   </View>
-                  
+
                   {/* INDICADOR DE ESCANEO ACTIVO */}
                   {isScanning && (
                     <View style={styles.scanningIndicator}>
@@ -335,12 +335,12 @@ export function FoodScanner({ visible, onClose, onProductScanned }: FoodScannerP
                     </View>
                   )}
                 </View>
-                
+
                 {/* INSTRUCCIONES */}
                 <Text style={styles.scanPromptText}>
                   Coloca el código de barras dentro del marco
                 </Text>
-                
+
                 <Text style={styles.scanPromptSubtext}>
                   Asegúrate de que haya buena iluminación y mantén el código estable
                 </Text>

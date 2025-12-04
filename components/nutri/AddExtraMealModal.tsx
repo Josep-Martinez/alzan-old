@@ -5,13 +5,13 @@ import { useState } from 'react';
 import {
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Props del componente
 interface AddExtraMealModalProps {
@@ -47,7 +47,7 @@ export function AddExtraMealModal({ visible, onClose, onAdd }: AddExtraMealModal
 
     // Llamar a la función padre para añadir la comida
     onAdd(mealName.trim(), mealTime.trim());
-    
+
     // Limpiar el formulario y cerrar el modal
     handleClose();
   };
@@ -102,10 +102,10 @@ export function AddExtraMealModal({ visible, onClose, onAdd }: AddExtraMealModal
                     onPress={() => selectSuggestedMeal(meal)}
                   >
                     <View style={styles.suggestionIconContainer}>
-                      <MaterialCommunityIcons 
-                        name={meal.icon as any} 
-                        size={24} 
-                        color="#00D4AA" 
+                      <MaterialCommunityIcons
+                        name={meal.icon as any}
+                        size={24}
+                        color="#00D4AA"
                       />
                     </View>
                     <View style={styles.suggestionTextContainer}>
@@ -123,7 +123,7 @@ export function AddExtraMealModal({ visible, onClose, onAdd }: AddExtraMealModal
                 <MaterialCommunityIcons name="pencil-plus" size={20} color="#00D4AA" />
                 <Text style={styles.formSectionTitle}>O crea una personalizada</Text>
               </View>
-              
+
               {/* Campo nombre de la comida */}
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Nombre de la comida *</Text>
@@ -161,16 +161,16 @@ export function AddExtraMealModal({ visible, onClose, onAdd }: AddExtraMealModal
 
           {/* Botones de acción */}
           <View style={styles.modalActions}>
-            <Pressable 
+            <Pressable
               style={[styles.actionButton, styles.cancelButton]}
               onPress={handleClose}
             >
               <Text style={styles.actionButtonText}>Cancelar</Text>
             </Pressable>
-            
-            <Pressable 
+
+            <Pressable
               style={[
-                styles.actionButton, 
+                styles.actionButton,
                 styles.addButton,
                 (!mealName.trim() || !mealTime.trim()) && styles.disabledButton
               ]}

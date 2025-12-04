@@ -2,7 +2,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface MeasurementData {
   peso?: number;
@@ -36,9 +37,9 @@ export function AddMeasurementModal({
   onSave,
   currentData
 }: AddMeasurementModalProps) {
-  
+
   const [measurements, setMeasurements] = useState<MeasurementData>(currentData || {});
-  
+
   // Configuración de campos de medición con validaciones
   const measurementFields = [
     { key: 'peso' as keyof MeasurementData, label: 'Peso', unit: 'kg', required: true, icon: 'weight' },
@@ -134,10 +135,10 @@ export function AddMeasurementModal({
                 <View key={field.key} style={styles.measurementField}>
                   <View style={styles.fieldHeader}>
                     <View style={styles.fieldLabelContainer}>
-                      <MaterialCommunityIcons 
-                        name={field.icon as any} 
-                        size={20} 
-                        color="#00D4AA" 
+                      <MaterialCommunityIcons
+                        name={field.icon as any}
+                        size={20}
+                        color="#00D4AA"
                       />
                       <Text style={styles.fieldLabel}>
                         {field.label}
@@ -146,7 +147,7 @@ export function AddMeasurementModal({
                     </View>
                     <Text style={styles.fieldUnit}>{field.unit}</Text>
                   </View>
-                  
+
                   <TextInput
                     style={[
                       styles.measurementInput,
@@ -182,16 +183,16 @@ export function AddMeasurementModal({
 
           {/* Actions */}
           <View style={styles.modalActions}>
-            <Pressable 
+            <Pressable
               style={[styles.actionButton, styles.cancelButton]}
               onPress={handleClose}
             >
               <Text style={styles.actionButtonText}>Cancelar</Text>
             </Pressable>
-            
-            <Pressable 
+
+            <Pressable
               style={[
-                styles.actionButton, 
+                styles.actionButton,
                 styles.saveButton,
                 !measurements.peso && styles.disabledButton
               ]}
